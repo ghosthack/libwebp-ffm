@@ -18,12 +18,12 @@ encode/decode.
 <dependency>
   <groupId>io.github.ghosthack</groupId>
   <artifactId>libwebp-ffm</artifactId>
-  <version>1.6.0-0.1.0-SNAPSHOT</version>
+  <version>1.6.0-0.1.0</version>
 </dependency>
 <dependency>
   <groupId>io.github.ghosthack</groupId>
   <artifactId>libwebp-ffm-natives</artifactId>
-  <version>1.6.0-0.1.0-SNAPSHOT</version>
+  <version>1.6.0-0.1.0</version>
   <classifier>macos-arm64</classifier> <!-- or windows-x64 / linux-x64 -->
   <scope>runtime</scope>
 </dependency>

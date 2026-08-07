@@ -6,7 +6,7 @@
 
   <groupId>io.github.ghosthack</groupId>
   <artifactId>libwebp-ffm-parent</artifactId>
-  <version>1.6.0-0.1.0-SNAPSHOT</version>
+  <version>1.6.0-0.1.0</version>
   <packaging>pom</packaging>
 
   <name>libwebp-ffm parent</name>
@@ -68,6 +68,9 @@
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-gpg-plugin</artifactId>
             <version>3.2.7</version>
+            <configuration>
+              <bestPractices>true</bestPractices>
+            </configuration>
             <executions><execution><id>sign-artifacts</id><phase>verify</phase><goals><goal>sign</goal></goals></execution></executions>
           </plugin>
           <plugin>
@@ -101,4 +104,3 @@
     </profile>
   </profiles>
 </project>
-
