@@ -49,7 +49,7 @@ for runtime in libwinpthread-1.dll libgcc_s_seh-1.dll; do
   fi
 done
 
-ALLOWED='sharpyuv|webp|libwinpthread|libgcc_s_seh|KERNEL32|USER32|ADVAPI32|msvcrt|ntdll|api-ms-'
+ALLOWED='lib(sharpyuv|webp)|libwinpthread|libgcc_s_seh|KERNEL32|USER32|ADVAPI32|msvcrt|ntdll|api-ms-'
 for dll in "$DEST"/*.dll; do
   if objdump -p "$dll" | awk '/DLL Name:/{print $3}' | grep -viE "^($ALLOWED)"; then
     echo "ERROR: $dll imports unexpected DLLs (above)"; exit 1
