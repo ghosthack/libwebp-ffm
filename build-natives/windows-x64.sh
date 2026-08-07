@@ -24,9 +24,15 @@ ninja -C "$BUILD" install
 rm -rf "$DEST"
 mkdir -p "$DEST"
 : > "$DEST/manifest.txt"
-for pattern in '*sharpyuv-[0-9]*.dll' '*webp-[0-9]*.dll' '*webpdemux-[0-9]*.dll' '*webpmux-[0-9]*.dll'; do
-  dll="$(find "$PREFIX/bin" -maxdepth 1 -type f -iname "$pattern" | head -1)"
-  [ -n "$dll" ] || { echo "missing DLL matching $pattern in $PREFIX/bin"; exit 1; }
+for lib in libsharpyuv libwebp libwebpdemux libwebpmux; do
+  # libwebp's MinGW CMake build currently installs unversioned DLLs. Keep a
+  # versioned-name fallback for compatible builds that encode the ABI in the
+  # filename, without allowing "libwebp" to accidentally select demux/mux.
+  dll="$PREFIX/bin/$lib.dll"
+  if [ ! -f "$dll" ]; then
+    dll="$(find "$PREFIX/bin" -maxdepth 1 -type f -iname "$lib-[0-9]*.dll" | head -1)"
+  fi
+  [ -n "$dll" ] && [ -f "$dll" ] || { echo "missing $lib DLL in $PREFIX/bin"; exit 1; }
   base="$(basename "$dll")"
   cp "$dll" "$DEST/$base"
   echo "$base" >> "$DEST/manifest.txt"
