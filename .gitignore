@@ -1,0 +1,7 @@
+/build/
+/core/target/
+/natives/target/
+/tools/jextract-*/
+/natives/src/main/resources/libwebp-natives/
+.DS_Store
+

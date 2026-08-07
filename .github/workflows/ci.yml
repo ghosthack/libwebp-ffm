@@ -1,0 +1,112 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+  workflow_call:
+    inputs:
+      ref:
+        description: Git ref to verify
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+env:
+  LIBWEBP_VERSION: 1.6.0
+
+jobs:
+  natives-macos:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.ref || github.sha }}
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 22
+          cache: maven
+      - name: Install build tools
+        run: brew install cmake ninja
+      - name: Fetch libwebp source
+        run: |
+          mkdir -p build
+          curl -sfL "https://storage.googleapis.com/downloads.webmproject.org/releases/webp/libwebp-${LIBWEBP_VERSION}.tar.gz" | tar xz -C build
+      - name: Build and test
+        run: |
+          build-natives/macos-arm64.sh
+          mvn -B clean install
+      - uses: actions/upload-artifact@v4
+        with:
+          name: natives-macos-arm64
+          path: natives/src/main/resources/libwebp-natives/macos-arm64/
+          if-no-files-found: error
+
+  natives-windows:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.ref || github.sha }}
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 22
+          cache: maven
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          update: false
+          install: >-
+            mingw-w64-x86_64-toolchain
+            mingw-w64-x86_64-cmake
+            mingw-w64-x86_64-ninja
+            curl
+            tar
+      - name: Fetch, build, and test
+        run: |
+          mkdir -p build
+          curl -sfL "https://storage.googleapis.com/downloads.webmproject.org/releases/webp/libwebp-${LIBWEBP_VERSION}.tar.gz" | tar xz -C build
+          build-natives/windows-x64.sh
+      - name: Test with Maven
+        shell: pwsh
+        run: mvn -B clean install
+      - uses: actions/upload-artifact@v4
+        with:
+          name: natives-windows-x64
+          path: natives/src/main/resources/libwebp-natives/windows-x64/
+          if-no-files-found: error
+
+  natives-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.ref || github.sha }}
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 22
+          cache: maven
+      - name: Install build tools
+        run: sudo apt-get update && sudo apt-get install -y cmake ninja-build patchelf
+      - name: Fetch, build, and test
+        run: |
+          mkdir -p build
+          curl -sfL "https://storage.googleapis.com/downloads.webmproject.org/releases/webp/libwebp-${LIBWEBP_VERSION}.tar.gz" | tar xz -C build
+          build-natives/linux-x64.sh
+          mvn -B clean install
+      - uses: actions/upload-artifact@v4
+        with:
+          name: natives-linux-x64
+          path: natives/src/main/resources/libwebp-natives/linux-x64/
+          if-no-files-found: error
+
