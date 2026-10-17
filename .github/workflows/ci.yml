@@ -40,7 +40,7 @@ jobs:
       - name: Build and test
         run: |
           build-natives/macos-arm64.sh
-          mvn -B clean install
+          ./mvnw -B clean install
       - uses: actions/upload-artifact@v4
         with:
           name: natives-macos-arm64
@@ -77,8 +77,8 @@ jobs:
           curl -sfL "https://storage.googleapis.com/downloads.webmproject.org/releases/webp/libwebp-${LIBWEBP_VERSION}.tar.gz" | tar xz -C build
           build-natives/windows-x64.sh
       - name: Test with Maven
-        shell: pwsh
-        run: mvn -B clean install
+        shell: bash
+        run: ./mvnw -B clean install
       - uses: actions/upload-artifact@v4
         with:
           name: natives-windows-x64
@@ -103,7 +103,7 @@ jobs:
           mkdir -p build
           curl -sfL "https://storage.googleapis.com/downloads.webmproject.org/releases/webp/libwebp-${LIBWEBP_VERSION}.tar.gz" | tar xz -C build
           build-natives/linux-x64.sh
-          mvn -B clean install
+          ./mvnw -B clean install
       - uses: actions/upload-artifact@v4
         with:
           name: natives-linux-x64
